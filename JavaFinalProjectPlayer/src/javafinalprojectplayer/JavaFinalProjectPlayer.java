@@ -58,6 +58,32 @@ public class JavaFinalProjectPlayer  {
             System.out.println("Socket could not connect!");
         }
     }
+    void won(){
+        JLabel label = new JLabel("You Won!!!", SwingConstants.CENTER);
+        label.setFont(new Font("Serif", Font.BOLD, 20));
+        label.setForeground(Color.RED);
+        label.setBackground(Color.ORANGE);
+        label.setOpaque(true);
+
+        jf.add(label); 
+        //frame.setSize(300,150);
+        jf.setVisible(true);
+    }
+    void lose(){
+        JLabel label = new JLabel("You Lost...", SwingConstants.CENTER);
+        label.setFont(new Font("Serif", Font.BOLD, 20));
+        label.setForeground(Color.RED);
+        label.setBackground(Color.ORANGE);
+        label.setOpaque(true);
+
+        jf.add(label); 
+        //frame.setSize(300,150);
+        jf.setVisible(true);
+    }
+    void tie(){
+        //text.setText("");
+        // reset buttons/bunnies
+    }
     
 }
 

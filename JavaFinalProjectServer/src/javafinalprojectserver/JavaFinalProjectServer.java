@@ -31,17 +31,18 @@ public class JavaFinalProjectServer {
             Socket winner = whowon(player1, player2);
                 
             while ((winner != player1) && (winner != player2)){
-                //give both player tie, and restart
+                p1sout.print("You lost");
+                p2sout.print("You won");
                 winner = whowon(player1, player2);
             }
             
             if (winner == player1){
-                // give player1 you won
-                //give player2 you loss
+                p1sout.print("You won");
+                p2sout.print("You lost");
             }
             else{
-                //give player1 you loss
-                //give player2 you won
+                p1sout.print("tie");
+                p2sout.print("tie");
             }
             
         } catch (IOException ex) {
