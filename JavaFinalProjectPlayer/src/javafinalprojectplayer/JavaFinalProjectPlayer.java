@@ -95,7 +95,7 @@ class UserInput extends Thread{
         
         JPanel jp = new JPanel();
         jp.setSize(500,100);
-        JavaHW4client.jf.add(jp, BorderLayout.SOUTH);
+        JavaFinalProjectPlayer.jf.add(jp, BorderLayout.SOUTH);
         
         JTextField text = new JTextField(20);
         jp.add(text);
@@ -104,7 +104,7 @@ class UserInput extends Thread{
         jb.addActionListener(new ButtonListener(text));
         jp.add(jb);
         
-        JavaHW4client.jf.setVisible(true);
+        JavaFinalProjectPlayer.jf.setVisible(true);
         
     }
     class ButtonListener implements ActionListener{
@@ -135,14 +135,14 @@ class GetMsg extends Thread{
         
         jp.add(scrollPane);
         
-        JavaHW4client.jf.add(jp);
+        JavaFinalProjectPlayer.jf.add(jp);
         
-        JavaHW4client.jf.setVisible(true);
+        JavaFinalProjectPlayer.jf.setVisible(true);
         while(true){
             String msg = sin.nextLine();
             textArea.append(msg+'\n');
             textArea.setCaretPosition(textArea.getDocument().getLength());
-            JavaHW4client.jf.setVisible(true);
+            JavaFinalProjectPlayer.jf.setVisible(true);
         }
     }
     
