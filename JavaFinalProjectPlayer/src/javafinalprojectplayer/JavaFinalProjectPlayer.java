@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.awt.*;
 import java.awt.event.*;
+import static javafinalprojectplayer.JavaFinalProjectPlayer.jf;
 import javax.swing.*;
 
 /**
@@ -35,30 +36,59 @@ public class JavaFinalProjectPlayer  {
         
         String server = myObj.nextLine();  // Read server ?server is IP or Port
         
-        System.out.print("Enter Username: ");
-        String username = myObj.nextLine();
         
+        //create game window and display 
+        jf.setLayout(new BorderLayout());
+        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jf.setSize(500, 600);
         
+
         try {
             Socket sock = new Socket(server, 5190);
-            
             PrintStream sout = new PrintStream(sock.getOutputStream());
-            Scanner sin = new Scanner(sock.getInputStream());
-            
-            sout.println(username);
-            
-            jf.setLayout(new BorderLayout());
-            jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            jf.setSize(500, 600);
-            
-            new UserInput(sout).start();
-            new GetMsg(sin).start();
-            
+            Scanner sin = new Scanner(sock.getInputStream());           
         } catch (IOException ex) {
             System.out.println("Socket could not connect!");
         }
+        
+        
+        
+        //display two icons P1 and P2 
+        //when both clients are connected, start button will be present to be clickable 
+        //once clicked, the new frame with game will load 
+        
+        JButton startButton = new JButton("Start Game");
+        startButton.addActionListener(new StartGame());
+        jf.add(startButton);
+        
     }
-    void won(){
+
+    
+}
+
+
+class StartGame implements ActionListener {
+    
+    JButton[] bunnies = new JButton[2]; //holds Boolean True if bunny shows up
+    
+    StartGame() {
+        //**********LAYOUT for GAME***********************
+        //JFrame BorderLayout 
+        // JPanel of score NORTHEAST
+        //JPanel of timer on NORTHWEST
+        //JPanel of bunnies CENTER, GridLayout 1 X 2 
+        //JText for client guess SOUTH 
+        //Submit Button SOUTHEAST
+        
+        
+    }
+    @Override
+        public void actionPerformed(ActionEvent arg0){
+            
+            
+        }
+
+    void won(){ //display won message to client 
         JLabel label = new JLabel("You Won!!!", SwingConstants.CENTER);
         label.setFont(new Font("Serif", Font.BOLD, 20));
         label.setForeground(Color.RED);
@@ -69,7 +99,7 @@ public class JavaFinalProjectPlayer  {
         //frame.setSize(300,150);
         jf.setVisible(true);
     }
-    void lose(){
+    void lose(){ //display lsot message to client
         JLabel label = new JLabel("You Lost...", SwingConstants.CENTER);
         label.setFont(new Font("Serif", Font.BOLD, 20));
         label.setForeground(Color.RED);
@@ -84,9 +114,38 @@ public class JavaFinalProjectPlayer  {
         //text.setText("");
         // reset buttons/bunnies
     }
-    
 }
 
+
+class Bunny implements ActionListener {
+    Bunny() {}
+    
+    //changes boolean true false, change icon Image with/wout bunny
+    @Override
+        public void actionPerformed(ActionEvent arg0){
+            //**********LAYOUT for GAME***********************
+            //JFrame BorderLayout 
+            // JPanel of opponent's guess NORTH
+            //JPanel of StartButton  SOUTH
+            //JPanel of bunnies CENTER, GridLayout 1 X 2 oppenent's guess on left, your guess on right
+            
+            return;
+        }
+}
+
+
+class SubmitGuess implements ActionListener {
+    SubmitGuess() {}
+    
+    @Override
+        public void actionPerformed(ActionEvent arg0) {
+            
+            
+            return;
+        }
+}
+        
+        
 class UserInput extends Thread{
     PrintStream sout;
     UserInput(PrintStream newsout){sout = newsout;}

@@ -69,6 +69,10 @@ public class JavaFinalProjectServer {
                 return player2;
             }
             
+            
+            //send each client their oppoenent's guess to display all bunnies 
+
+            
         }catch (IOException ex) {
             System.out.println("Could not get input stream");
         }
