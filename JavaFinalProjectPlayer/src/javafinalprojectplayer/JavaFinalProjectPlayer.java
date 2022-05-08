@@ -27,41 +27,129 @@ public class JavaFinalProjectPlayer  {
      * @param args the command line arguments
      */
     
+    static JFrame startgame;
+    static JFrame initial;
+    static int score;
+    static int timer;
+    static JButton[] bunnies;
+    
     public static void main(String[] args) {
-        new StartGame();
-        /*
+        
+        
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
         
-        System.out.print("Enter Server: ");
+        System.out.print("Enter Server: "); 
         
         String server = myObj.nextLine();  // Read server ?server is IP or Port
         
+        Scanner sin;
         
-        //create game window and display 
-        jf.setLayout(new BorderLayout());
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jf.setSize(500, 600);
+        while (true) { //if host IP is not valid, continue asking 
+            try {
+                Socket sock = new Socket(server, 5190);
+                PrintStream sout = new PrintStream(sock.getOutputStream());
+                sin = new Scanner(sock.getInputStream()); 
+                break;
+            } catch (IOException ex) {
+                System.out.println("Socket could not connect!");
+                System.out.print("Enter Server: "); 
+                server = myObj.nextLine();  // Read server ?server is IP or Port
+                
+            }
+        } 
         
-
-        try {
-            Socket sock = new Socket(server, 5190);
-            PrintStream sout = new PrintStream(sock.getOutputStream());
-            Scanner sin = new Scanner(sock.getInputStream());           
-        } catch (IOException ex) {
-            System.out.println("Socket could not connect!");
-        }
         
-        
-        
+        //***********LAYOUT for START PAGE*************************************************************
         //display two icons P1 and P2 
         //when both clients are connected, start button will be present to be clickable 
         //once clicked, the new frame with game will load 
         
-        JButton startButton = new JButton("Start Game");
-        startButton.addActionListener(new StartGame());
-        jf.add(startButton);
-*/
+        //JFrame BorderLayout
+        initial = new JFrame("Bunnies");
+        initial.setLayout(new BorderLayout());
+        initial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initial.setSize(500, 400);
+        JPanel initialPanel = new JPanel();
+        initialPanel.setLayout(new BorderLayout());
+        initial.add(initialPanel, BorderLayout.CENTER);
         
+        JButton startButton = new JButton("Start Game");
+        startButton.setSize(200,200);
+        initialPanel.add(startButton, BorderLayout.CENTER);
+        
+        initial.setVisible(true);
+        
+        String ready = sin.nextLine();
+        System.out.println(ready);
+        startButton.addActionListener(new StartGame()); //make start button clickable
+        
+        //***********LAYOUT for START PAGE***************************************************************
+
+
+
+        //**********LAYOUT for GAME********************************************************************
+        //JFrame BorderLayout 
+        startgame = new JFrame("Pick your bunnies");
+        startgame.setLayout(new BorderLayout());
+        startgame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        startgame.setSize(500, 400);
+
+        // JPanel of score and timer NORTHEAST and NORTHWEST
+        JPanel scoretimer = new JPanel();
+        scoretimer.setLayout(new BorderLayout());
+        scoretimer.setSize(500, 100);
+        startgame.add(scoretimer, BorderLayout.NORTH);
+
+        JLabel scorel = new JLabel(" "+score+" ");
+        scorel.setFont(new Font("Serif", Font.BOLD, 50));
+        scorel.setForeground(Color.PINK);
+        scorel.setBackground(Color.gray);
+        scorel.setOpaque(true);
+        scoretimer.add(scorel, BorderLayout.WEST);
+
+        JLabel timerl = new JLabel(" "+timer+" ");
+        timerl.setFont(new Font("Serif", Font.BOLD, 50));
+        timerl.setForeground(Color.PINK);
+        timerl.setBackground(Color.gray);
+        timerl.setOpaque(true);
+        scoretimer.add(timerl, BorderLayout.EAST);
+
+        //JPanel of bunnies CENTER, GridLayout 1 X 2 
+        JPanel bunniesp = new JPanel();
+        bunniesp.setSize(500, 200);
+        bunniesp.setLayout(new GridLayout(1, 2));
+        startgame.add(bunniesp, BorderLayout.CENTER);
+
+        bunnies = new JButton[2];
+        
+        ImageIcon img1 = new ImageIcon("src/javafinalprojectplayer/Bunny1.PNG");
+        JButton bunny1 = new JButton(img1);
+        bunny1.setSize(50, 50);
+        bunniesp.add(bunny1);
+        bunnies[0] = bunny1;
+        ImageIcon img2 = new ImageIcon("src/javafinalprojectplayer/Bunny2.PNG");
+        JButton bunny2 = new JButton(img2);
+        bunny2.setSize(50,50);
+        bunnies[1] = bunny2;
+        bunniesp.add(bunny2);
+        
+        
+        
+
+        //JText for client guess SOUTH 
+        JPanel guessp = new JPanel();
+        guessp.setSize(500, 100);
+        startgame.add(guessp, BorderLayout.SOUTH);
+        JTextField guessbox= new JTextField(20);
+        guessp.add(guessbox);
+        //Submit Button SOUTHEAST
+        JButton submit = new JButton("Submit");
+        submit.addActionListener(new SubmitGuess());
+        guessp.add(submit);
+        
+        startgame.setVisible(false);
+
+        //**********START GAME********************************************************************
     }
 
     
@@ -69,68 +157,17 @@ public class JavaFinalProjectPlayer  {
 
 
 class StartGame implements ActionListener {
-    
-    JButton[] bunnies = new JButton[2]; //holds Boolean True if bunny shows up
-    int score = 0;
-    int timer = 0;
+
     StartGame() {
-        
+        JavaFinalProjectPlayer.score = 0;
+        JavaFinalProjectPlayer.timer = 0;
     }
     @Override
         public void actionPerformed(ActionEvent arg0){
-            //**********LAYOUT for GAME***********************
-            //JFrame BorderLayout 
-            JFrame startgame = new JFrame("Pick your bunnies");
-            startgame.setLayout(new BorderLayout());
-            startgame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            startgame.setSize(500, 400);
-
-            // JPanel of score and timer NORTHEAST and NORTHWEST
-            JPanel scoretimer = new JPanel();
-            scoretimer.setLayout(new BorderLayout());
-            scoretimer.setSize(500, 100);
-            startgame.add(scoretimer, BorderLayout.NORTH);
-
-            JLabel scorel = new JLabel(" "+score+"");
-            scorel.setFont(new Font("Serif", Font.BOLD, 50));
-            scorel.setForeground(Color.PINK);
-            scorel.setBackground(Color.gray);
-            scorel.setOpaque(true);
-            scoretimer.add(scorel, BorderLayout.WEST);
-
-            JLabel timerl = new JLabel(" "+timer+" ");
-            timerl.setFont(new Font("Serif", Font.BOLD, 50));
-            timerl.setForeground(Color.PINK);
-            timerl.setBackground(Color.gray);
-            timerl.setOpaque(true);
-            scoretimer.add(timerl, BorderLayout.EAST);
-
-            //JPanel of bunnies CENTER, GridLayout 1 X 2 
-            JPanel bunniesp = new JPanel();
-            bunniesp.setSize(500, 200);
-            bunniesp.setLayout(new GridLayout(1, 2));
-            startgame.add(bunniesp, BorderLayout.CENTER);
-
-            JButton bunny1 = new JButton("1");
-            bunniesp.add(bunny1);
-            bunnies[0] = bunny1;
-            JButton bunny2 = new JButton("2");
-            bunnies[1] = bunny2;
-            bunniesp.add(bunny2);
-
-            //JText for client guess SOUTH 
-            JPanel guessp = new JPanel();
-            guessp.setSize(500, 100);
-            startgame.add(guessp, BorderLayout.SOUTH);
-            JTextField guessbox= new JTextField(20);
-            guessp.add(guessbox);
-            //Submit Button SOUTHEAST
-            JButton submit = new JButton("Submit");
-            submit.addActionListener(new SubmitGuess());
-            guessp.add(submit);
-
-            startgame.setVisible(true);
-            
+            //dispose of initial window and open the game window
+            JavaFinalProjectPlayer.initial.dispose();
+            JavaFinalProjectPlayer.startgame.setVisible(true);
+      
         }
 
 }
@@ -142,7 +179,6 @@ class Bunny implements ActionListener {
     //changes boolean true false, change icon Image with/wout bunny
     @Override
         public void actionPerformed(ActionEvent arg0){
-            
             return;
         }
 }

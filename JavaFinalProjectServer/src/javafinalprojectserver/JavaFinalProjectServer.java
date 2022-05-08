@@ -23,11 +23,20 @@ public class JavaFinalProjectServer {
         try {
             ServerSocket ss = new ServerSocket(5190);
             Socket player1 = ss.accept();
-                
+            System.out.println("player 1 is in");
+
             Socket player2 = ss.accept();
+            System.out.println("player 2 is in");
                 
             PrintStream p1sout = new PrintStream(player1.getOutputStream());
             PrintStream p2sout = new PrintStream(player2.getOutputStream());
+            
+            //tell both players they are ready to play each other and set start button to green
+            //on players' windows 
+
+            p1sout.println("hi");
+            p2sout.println("hi");
+            
             Socket winner = whowon(player1, player2);
                 
             while ((winner != player1) && (winner != player2)){
