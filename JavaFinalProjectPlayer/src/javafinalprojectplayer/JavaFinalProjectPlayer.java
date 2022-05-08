@@ -15,6 +15,7 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.awt.*;
 import java.awt.event.*;
+import static java.lang.Thread.sleep;
 import javax.swing.*;
 
 /**
@@ -69,18 +70,33 @@ public class JavaFinalProjectPlayer  {
         initial.setLayout(new BorderLayout());
         initial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initial.setSize(500, 400);
-        JPanel initialPanel = new JPanel();
-        initialPanel.setLayout(new BorderLayout());
-        initial.add(initialPanel, BorderLayout.CENTER);
         
-        JButton startButton = new JButton("Start Game");
-        startButton.setSize(200,200);
-        initialPanel.add(startButton, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel();
+        JButton startButton = new JButton("Start Game"); //HOW TO CHANGE START BUTTON SIZE?
+        buttonPanel.add(startButton);
+       
+        LoadingGraphic graphicPanel = new LoadingGraphic(); //JPanel
         
+        
+        initial.add(buttonPanel, BorderLayout.NORTH);
+        initial.add(graphicPanel, BorderLayout.CENTER);
         initial.setVisible(true);
+        
+        Thread loadingThread = new Thread() {
+            public void run() {
+                while(true) {
+                    try {
+                        sleep(500);
+                    } catch (InterruptedException e) {}
+                    graphicPanel.repaint();
+                }
+            }
+        };
+        loadingThread.start(); //starting loading graphic
         
         String ready = sin.nextLine();
         System.out.println(ready);
+        loadingThread.stop(); //stop loading graphics
         startButton.addActionListener(new StartGame()); //make start button clickable
         
         //***********LAYOUT for START PAGE***************************************************************
@@ -133,9 +149,6 @@ public class JavaFinalProjectPlayer  {
         bunnies[1] = bunny2;
         bunniesp.add(bunny2);
         
-        
-        
-
         //JText for client guess SOUTH 
         JPanel guessp = new JPanel();
         guessp.setSize(500, 100);
@@ -237,3 +250,33 @@ class StartAgain implements ActionListener{
     }
 }
        
+class LoadingGraphic extends JPanel {
+    int dots;
+    
+    LoadingGraphic() {
+        dots = 3; 
+    }
+    
+    @Override 
+    protected void paintComponent(Graphics g) {
+        g.setColor(Color.PINK);
+        if (dots == 3) {
+            g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
+            g.fillOval(this.getWidth()/2, this.getHeight()/2, 20, 20);
+            g.fillOval(this.getWidth()/2 + 80, this.getHeight()/2, 20, 20);
+            System.out.println("dots 3");
+       } else if (dots == 2) {
+            g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
+            g.fillOval(this.getWidth()/2, this.getHeight()/2, 20, 20);
+            System.out.println("dots 2");
+       } else if (dots == 1) {
+            g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
+            System.out.println("dots 1");
+       } 
+       dots = (dots + 1) % 4; 
+    } //end of paintComponent
+    
+    
+
+}
+    
