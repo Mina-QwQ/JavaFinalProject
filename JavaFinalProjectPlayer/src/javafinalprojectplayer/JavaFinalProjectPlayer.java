@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.*;
 import static java.lang.Thread.sleep;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 
 /**
  *
@@ -32,7 +33,8 @@ public class JavaFinalProjectPlayer  {
     static JFrame initial;
     static int score;
     static int timer;
-    static JButton[] bunnies;
+    static int[] bunnies;
+    static PrintStream sout;
     
     public static void main(String[] args) {
         
@@ -48,7 +50,7 @@ public class JavaFinalProjectPlayer  {
         while (true) { //if host IP is not valid, continue asking 
             try {
                 Socket sock = new Socket(server, 5190);
-                PrintStream sout = new PrintStream(sock.getOutputStream());
+                sout = new PrintStream(sock.getOutputStream());
                 sin = new Scanner(sock.getInputStream()); 
                 break;
             } catch (IOException ex) {
@@ -136,18 +138,20 @@ public class JavaFinalProjectPlayer  {
         bunniesp.setLayout(new GridLayout(1, 2));
         startgame.add(bunniesp, BorderLayout.CENTER);
 
-        bunnies = new JButton[2];
+        bunnies = new int[2];
         
         ImageIcon img1 = new ImageIcon("src/javafinalprojectplayer/Bunny1.PNG");
         JButton bunny1 = new JButton(img1);
         bunny1.setSize(50, 50);
         bunniesp.add(bunny1);
-        bunnies[0] = bunny1;
+        bunnies[0] = 0; // set to false
+        bunny1.addActionListener(new Bunny(0));
         ImageIcon img2 = new ImageIcon("src/javafinalprojectplayer/Bunny2.PNG");
         JButton bunny2 = new JButton(img2);
         bunny2.setSize(50,50);
-        bunnies[1] = bunny2;
+        bunnies[1] = 0; // set to false
         bunniesp.add(bunny2);
+        bunny2.addActionListener(new Bunny(1));
         
         //JText for client guess SOUTH 
         JPanel guessp = new JPanel();
@@ -155,12 +159,20 @@ public class JavaFinalProjectPlayer  {
         startgame.add(guessp, BorderLayout.SOUTH);
         JTextField guessbox= new JTextField(20);
         guessp.add(guessbox);
-        //Submit Button SOUTHEAST
-        JButton submit = new JButton("Submit");
-        submit.addActionListener(new SubmitGuess());
-        guessp.add(submit);
         
+        //start timer
+        sin.nextLine();
+        while (timer < 10){
+            try{
+                sleep(1000);
+            }catch(InterruptedException e) {}
+            timer += 1;
+            timerl.setText(" " + timer + " ");
+            startgame.setVisible(true);
+        }
+        sout.println(guessbox.getText());
         startgame.setVisible(false);
+        timer = 0;
 
         //**********START GAME********************************************************************
     }
@@ -179,6 +191,7 @@ class StartGame implements ActionListener {
         public void actionPerformed(ActionEvent arg0){
             //dispose of initial window and open the game window
             JavaFinalProjectPlayer.initial.dispose();
+            JavaFinalProjectPlayer.sout.println("start");
             JavaFinalProjectPlayer.startgame.setVisible(true);
       
         }
@@ -187,32 +200,24 @@ class StartGame implements ActionListener {
 
 
 class Bunny implements ActionListener {
-    Bunny() {}
+    int ind;
+    Bunny(int index) {ind = index;}
     
     //changes boolean true false, change icon Image with/wout bunny
     @Override
         public void actionPerformed(ActionEvent arg0){
+            JavaFinalProjectPlayer.bunnies[ind] = JavaFinalProjectPlayer.bunnies[ind] ^ 1;
+            JButton curr = (JButton) arg0.getSource();
+            if (JavaFinalProjectPlayer.bunnies[ind] == 1){
+                curr.setBorder(new LineBorder(Color.GREEN));
+            }
+            else{
+                curr.setBorder(new LineBorder(Color.BLACK));
+            }
             return;
         }
 }
 
-
-class SubmitGuess implements ActionListener {
-    SubmitGuess() {}
-    
-    @Override
-        public void actionPerformed(ActionEvent arg0) {
-            
-            //**********LAYOUT for GAME***********************
-            //JFrame BorderLayout 
-            // JPanel of opponent's guess NORTH
-            //JPanel of StartButton  SOUTH
-            //JPanel of bunnies CENTER, GridLayout 1 X 2 oppenent's guess on left, your guess on right
-            //start again button
-            
-            return;
-        }
-}
    
 class StartAgain implements ActionListener{
     StartAgain(){}
@@ -264,14 +269,11 @@ class LoadingGraphic extends JPanel {
             g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
             g.fillOval(this.getWidth()/2, this.getHeight()/2, 20, 20);
             g.fillOval(this.getWidth()/2 + 80, this.getHeight()/2, 20, 20);
-            System.out.println("dots 3");
        } else if (dots == 2) {
             g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
             g.fillOval(this.getWidth()/2, this.getHeight()/2, 20, 20);
-            System.out.println("dots 2");
        } else if (dots == 1) {
             g.fillOval(this.getWidth()/2 - 80, this.getHeight()/2, 20, 20);
-            System.out.println("dots 1");
        } 
        dots = (dots + 1) % 4; 
     } //end of paintComponent

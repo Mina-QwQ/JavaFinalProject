@@ -30,12 +30,24 @@ public class JavaFinalProjectServer {
                 
             PrintStream p1sout = new PrintStream(player1.getOutputStream());
             PrintStream p2sout = new PrintStream(player2.getOutputStream());
+            Scanner p1sin = new Scanner(player1.getInputStream());
+            Scanner p2sin = new Scanner(player2.getInputStream());
             
             //tell both players they are ready to play each other and set start button to green
             //on players' windows 
 
             p1sout.println("hi");
-            p2sout.println("hi");
+            p2sout.println("hi"); // when both player is online
+            
+            p1sin.nextLine();
+            p2sin.nextLine(); // when both players click start
+            
+            System.out.println("here");
+            
+            p1sout.println("start");
+            p2sout.println("start");
+            
+            
             
             Socket winner = whowon(player1, player2);
                 
