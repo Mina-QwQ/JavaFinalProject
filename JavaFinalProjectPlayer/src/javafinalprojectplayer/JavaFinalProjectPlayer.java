@@ -96,8 +96,8 @@ public class JavaFinalProjectPlayer  {
         };
         loadingThread.start(); //starting loading graphic
         
-        String ready = sin.nextLine();
-        System.out.println(ready);
+        String ready = sin.nextLine(); // listens for "two clients connected"
+        //System.out.println('ready');
         loadingThread.stop(); //stop loading graphics
         startButton.addActionListener(new StartGame()); //make start button clickable
         
@@ -160,6 +160,16 @@ public class JavaFinalProjectPlayer  {
         JTextField guessbox= new JTextField(20);
         guessp.add(guessbox);
         
+        
+        //*******************WHEN BOTH CLIENTS CLICK START BUTTON*********************************
+        String openGameWindow = sin.nextLine(); //listens for "both clients clicked start"
+        System.out.println("right before disposing windows, received server message that both clicked");
+        //dispose of initial window and open the game window
+        initial.dispose();
+        startgame.setVisible(true);
+        
+        
+        //**********START GAME********************************************************************
         //start timer
         sin.nextLine();
         while (timer < 10){
@@ -168,13 +178,23 @@ public class JavaFinalProjectPlayer  {
             }catch(InterruptedException e) {}
             timer += 1;
             timerl.setText(" " + timer + " ");
-            startgame.setVisible(true);
+            //startgame.setVisible(true);
         }
-        sout.println(guessbox.getText());
+        
         startgame.setVisible(false);
         timer = 0;
+        
+        //check how many bunnies the client selected 
+        int totalBunnies = 0;
+        for (int i = 0; i < bunnies.length; i++){
+            if (bunnies[i] == 1) {
+                totalBunnies++;
+            }
+        }
+        //sout.println(guessbox.getText());
+        sout.println(totalBunnies + guessbox.getText()); //send to server the number of bunnies selected , and guess
 
-        //**********START GAME********************************************************************
+      
     }
 
     
@@ -189,10 +209,7 @@ class StartGame implements ActionListener {
     }
     @Override
         public void actionPerformed(ActionEvent arg0){
-            //dispose of initial window and open the game window
-            JavaFinalProjectPlayer.initial.dispose();
-            JavaFinalProjectPlayer.sout.println("start");
-            JavaFinalProjectPlayer.startgame.setVisible(true);
+            JavaFinalProjectPlayer.sout.println("start"); //tell server start, a client clicked the button
       
         }
 
