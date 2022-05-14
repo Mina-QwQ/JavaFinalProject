@@ -42,7 +42,7 @@ public class JavaFinalProjectServer {
                 clients.add(client_sock);
                 clientCount++;
             }
-            System.out.println("here");
+            //System.out.println("here");
             player1 = clients.get(0);
             player2 = clients.get(1);
             p1sout = new PrintStream(player1.getOutputStream());
@@ -142,23 +142,23 @@ class ProcessConnection extends Thread {
                     for (int i = 0; i < JavaFinalProjectServer.clients.size(); i++){
                         eachSout = new PrintStream(JavaFinalProjectServer.clients.get(i).getOutputStream());
                         eachSout.println("both clients clicked start"); //send to all clients
-                        System.out.println("both clients clicked start");
+                        //System.out.println("both clients clicked start");
                     } 
                     JavaFinalProjectServer.clickedStartButton = 0;
                 }
                 /*while (JavaFinalProjectServer.clickedStartButton != 2){
                     continue;
                 }*/
-                System.out.println("starting of getting ans");
+                //System.out.println("starting of getting ans");
 
                 int numBunnies = sin.nextInt();
-                System.out.println("Num of Bunnies "+numBunnies);
+                //System.out.println("Num of Bunnies "+numBunnies);
                 
                 JavaFinalProjectServer.total += numBunnies;
-                System.out.println("Total beginning: "+JavaFinalProjectServer.total);
+                //System.out.println("Total beginning: "+JavaFinalProjectServer.total);
                 int guess = sin.nextInt();
                 /*JavaFinalProjectServer.gotans++;
-                System.out.println(JavaFinalProjectServer.gotans);
+                //System.out.println(JavaFinalProjectServer.gotans);
                 while(JavaFinalProjectServer.gotans < 2){
                     //System.out.println(JavaFinalProjectServer.gotans);
                     continue;
@@ -179,23 +179,23 @@ class ProcessConnection extends Thread {
                
                 JavaFinalProjectServer.gameOver ^= (guess == JavaFinalProjectServer.total);
                 
-                System.out.println("finished comparing with total: "+finish);
+                //System.out.println("finished comparing with total: "+finish);
 
                 
-                System.out.println("Total: " + JavaFinalProjectServer.total);
+                //System.out.println("Total: " + JavaFinalProjectServer.total);
                 //reset if no one wins
                 JavaFinalProjectServer.gotans = 0;
                 
                 JavaFinalProjectServer.clickedStartButton = 0;
                 String wait = sin.nextLine(); //wait to hear "clicked start/replay button"
                 JavaFinalProjectServer.total = 0; // total reset
-                System.out.println("Total reset: "+JavaFinalProjectServer.total);
-                System.out.println("wait: " + wait);
+                //System.out.println("Total reset: "+JavaFinalProjectServer.total);
+                //System.out.println("wait: " + wait);
                 
                 
                 
             }
-            System.out.println("reach out of while loop");
+            //System.out.println("reach out of while loop");
             
            
             
