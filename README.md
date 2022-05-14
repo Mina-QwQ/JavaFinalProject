@@ -1,6 +1,4 @@
-# JavaFinalProject
-
-# BUNNIES 15 20! 
+# Java Final Project: BUNNIES 15 20! 
 
 This game is called BUNNIES 15 20! This is a simple client-server multiplayer game adapted from a modern Chinese drinking game called "15-20". 
 HOW TO PLAY: 
