@@ -23,13 +23,15 @@ public class JavaFinalProjectServer {
     static int gotans = 0;
     static Socket player1;
     static Socket player2;
-    static int[] guesses;
+    //static int[] guesses;
+    static boolean gameOver = false;
     
     public static void main(String[] args) {
         int clientCount = 0;
         PrintStream p1sout;
         PrintStream p2sout;
-        guesses = new int[2];
+        //guesses = new int[2];
+        
         
         
         try {
@@ -96,8 +98,7 @@ public class JavaFinalProjectServer {
 //            
 //            p1sout.println("start");
 //            p2sout.println("start");
-//            
-//            
+
             
 
 
@@ -129,10 +130,10 @@ class ProcessConnection extends Thread {
                 } 
             } 
             String line;
-            int correct = 0;
+            
             
             line = sin.nextLine(); // 'start' from clicking start button
-            while (correct == 0){  
+            while (!JavaFinalProjectServer.gameOver){  
                 JavaFinalProjectServer.clickedStartButton++;
                 //System.out.println(JavaFinalProjectServer.clickedStartButton);
             
@@ -154,48 +155,43 @@ class ProcessConnection extends Thread {
                 System.out.println("Num of Bunnies "+numBunnies);
                 
                 JavaFinalProjectServer.total += numBunnies;
+                System.out.println("Total beginning: "+JavaFinalProjectServer.total);
                 int guess = sin.nextInt();
-                JavaFinalProjectServer.gotans++;
+                /*JavaFinalProjectServer.gotans++;
                 System.out.println(JavaFinalProjectServer.gotans);
                 while(JavaFinalProjectServer.gotans < 2){
                     //System.out.println(JavaFinalProjectServer.gotans);
                     continue;
-                }
-                System.out.println("Done while loop");
-                
-                JavaFinalProjectServer.guesses[0] = 195738;
-                JavaFinalProjectServer.guesses[1] = 195738;
-                
-                while (JavaFinalProjectServer.guesses[0] == 195738 || JavaFinalProjectServer.guesses[1] == 195738) {
-                    if (client_sock == JavaFinalProjectServer.player1) {
-                        JavaFinalProjectServer.guesses[0] = guess;
-                    } else {
-                        JavaFinalProjectServer.guesses[1] = guess;
-                    } //fill array up with client guesses
-                
-                }
-                
-                
-                
-                
-                if ((JavaFinalProjectServer.total == JavaFinalProjectServer.guesses[0]) || (JavaFinalProjectServer.total == JavaFinalProjectServer.guesses[1])) {
-                    correct = 1;
-                } //someone won! 
+                }*/
                 
                 //send to other client this client's guess
                 if (JavaFinalProjectServer.player1 == client_sock) {
                     PrintStream s = new PrintStream (JavaFinalProjectServer.player2.getOutputStream());
-                    s.println(guess);
+                    s.println(guess); //send guess to opp
+                    s.println(numBunnies); //send num bunnies to opp
                 } else {
                     PrintStream s = new PrintStream (JavaFinalProjectServer.player1.getOutputStream());
                     s.println(guess);
+                    s.println(numBunnies);
                 }
-                        
+                sin.nextLine(); // get new line
+                String finish = sin.nextLine(); // player sent finish getting total "received opp total and bunnies"
+               
+                JavaFinalProjectServer.gameOver ^= (guess == JavaFinalProjectServer.total);
+                
+                System.out.println("finished comparing with total: "+finish);
+
+                
                 System.out.println("Total: " + JavaFinalProjectServer.total);
-                JavaFinalProjectServer.total = 0; 
                 //reset if no one wins
                 JavaFinalProjectServer.gotans = 0;
-                sin.nextLine();
+                
+                JavaFinalProjectServer.clickedStartButton = 0;
+                String wait = sin.nextLine(); //wait to hear "clicked start/replay button"
+                JavaFinalProjectServer.total = 0; // total reset
+                System.out.println("Total reset: "+JavaFinalProjectServer.total);
+                System.out.println("wait: " + wait);
+                
                 
                 
             }

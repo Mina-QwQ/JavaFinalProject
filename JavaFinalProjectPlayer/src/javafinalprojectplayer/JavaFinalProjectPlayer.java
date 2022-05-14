@@ -32,7 +32,6 @@ public class JavaFinalProjectPlayer  {
     static JFrame startgame;
     static JFrame initial;
     static JFrame results;
-    static int score;
     static int timer;
     static int[] bunnies;
     static PrintStream sout;
@@ -119,12 +118,6 @@ public class JavaFinalProjectPlayer  {
         scoretimer.setSize(500, 100);
         startgame.add(scoretimer, BorderLayout.NORTH);
 
-        JLabel scorel = new JLabel(" "+score+" ");
-        scorel.setFont(new Font("Serif", Font.BOLD, 50));
-        scorel.setForeground(Color.PINK);
-        scorel.setBackground(Color.gray);
-        scorel.setOpaque(true);
-        scoretimer.add(scorel, BorderLayout.WEST);
 
         JLabel timerl = new JLabel(" "+timer+" ");
         timerl.setFont(new Font("Serif", Font.BOLD, 50));
@@ -169,23 +162,28 @@ public class JavaFinalProjectPlayer  {
         //dispose of initial window and open the game window
         initial.dispose();
         int correct = 0;
-        int guess = 0;
-        int oppGuess = 0;
-        int total = 0;
-        
-        int firstGame = 1; //0 if not first game, to show previous game was a tie
+        int guess;
+        int oppGuess;
+        int oppNumBunnies;
+        int totalBunnies;
         
         //game loop until someone guesses correctly 
         while(correct == 0){ 
+            guess = 0;
+            oppGuess = 0;
+            totalBunnies = 0;
+            oppNumBunnies = 0;
             startgame.setVisible(true); //first game window 
             //sout.println("Both window started");
-            
             
             
             //reset input selections 
             //set borders to black
             bunny1.setBorder(new LineBorder(Color.BLACK));
             bunny2.setBorder(new LineBorder(Color.BLACK));
+            bunnies[0] = 0;
+            bunnies[1] = 0;
+            System.out.println("bunnies reset" + bunnies[0]+JavaFinalProjectPlayer.bunnies[1]);
             //set input text to 0
             guessbox.setText("0");
             
@@ -201,12 +199,14 @@ public class JavaFinalProjectPlayer  {
                 timerl.setText(" " + timer + " ");
                 //startgame.setVisible(true);
             }
+            
+            System.out.println("bunnies after" + bunnies[0]+JavaFinalProjectPlayer.bunnies[1]);
 
             startgame.setVisible(false);
             timer = 0;
 
             //check how many bunnies the client selected 
-            int totalBunnies = 0;
+            totalBunnies = 0;
             for (int i = 0; i < bunnies.length; i++){
                 if (bunnies[i] == 1) {
                     totalBunnies++;
@@ -221,11 +221,16 @@ public class JavaFinalProjectPlayer  {
             sout.println(guess); //send to server guess
             
             oppGuess = sin.nextInt();
-            total = oppGuess + guess;
-            
-            //System.out.println("my bunnies: " + totalBunnies);
             System.out.println("my opponent's guess: " + oppGuess);
-            System.out.println("my guess: " + guess);
+            oppNumBunnies = sin.nextInt();
+            System.out.println("opp bunnies: " + oppNumBunnies);
+            sout.println("received opp total and bunnies");
+            
+            sin.nextLine(); // grab new line
+            
+            totalBunnies += oppNumBunnies;
+            System.out.println("the total was: " + totalBunnies);
+            
             
             JFrame results = new JFrame("Results");
             results.setLayout(new BorderLayout());
@@ -237,111 +242,107 @@ public class JavaFinalProjectPlayer  {
             whoWon.setLayout(new BorderLayout());
             whoWon.setSize(500, 100);
             results.add(whoWon, BorderLayout.NORTH);
+            
+            JLabel result; 
+            
+            if (totalBunnies == Integer.valueOf(oppGuess) && totalBunnies == Integer.valueOf(guess)) { //both guess correctly, go again
+                System.out.println("both guessed correctly");
+                result = new JLabel("You both guessed correctly... try again!");
+                result.setFont(new Font("Serif", Font.BOLD, 20));
+                result.setForeground(Color.BLACK);
+                result.setBackground(Color.PINK);
+                result.setOpaque(true);
+                JButton tryAgain = new JButton("Try Again");
+                results.add(tryAgain, BorderLayout.SOUTH);
+                tryAgain.addActionListener(new StartGame());
+                whoWon.add(result);
+                
+            } else if (totalBunnies != guess && totalBunnies != oppGuess) { //both wrong
+                System.out.println("both guessed wrong");
+
+                result = new JLabel("You both guessed wrong... try again!");
+                result.setFont(new Font("Serif", Font.BOLD, 20));
+                result.setForeground(Color.BLACK);
+                result.setBackground(Color.PINK);
+                result.setOpaque(true);
+                JButton tryAgain = new JButton("Try Again");
+                results.add(tryAgain, BorderLayout.SOUTH);
+                tryAgain.addActionListener(new StartGame());
+                whoWon.add(result);
+            } else {
+                correct = 1; //someone won!
+                if (totalBunnies == guess){
+                    result = new JLabel("You won!!!");
+                    result.setFont(new Font("Serif", Font.BOLD, 20));
+                    result.setForeground(Color.BLACK);
+                    result.setBackground(Color.PINK);
+                    result.setOpaque(true);
+                    whoWon.add(result);
+                }
+                else{
+                    result = new JLabel("You Lost...");
+                    result.setFont(new Font("Serif", Font.BOLD, 20));
+                    result.setForeground(Color.BLACK);
+                    result.setBackground(Color.PINK);
+                    result.setOpaque(true);
+                    whoWon.add(result);
+                }
+            }
 
             JLabel myB;
             JLabel oppB;
 
             // JPanel of image for MY BUNNIES GUESSES
-            JPanel myBunnies = new JPanel();
-            myBunnies.setLayout(new BorderLayout());
-            myBunnies.setSize(200, 200);
-            results.add(myBunnies, BorderLayout.WEST);
+            JPanel Bunnies = new JPanel();
+            Bunnies.setLayout(new GridLayout(2,1));
+            Bunnies.setSize(400, 200);
             ImageIcon img3;
-            if (guess == 0) {
+            if (totalBunnies-oppNumBunnies == 0) {
                 img3 = new ImageIcon("src/javafinalprojectplayer/noBunnies.PNG");
-            } else if (guess == 1) {
+            } else if (totalBunnies-oppNumBunnies == 1) {
                 img3 = new ImageIcon("src/javafinalprojectplayer/oneBunny1.PNG");
             } else {
-                img3 = new ImageIcon("src.javafinalprojectplayer/twoBunnies.PNG");
+                img3 = new ImageIcon("src/javafinalprojectplayer/twoBunnies.PNG");
             }
             myB = new JLabel(img3);
             
-            myBunnies.add(myB);
-            results.add(myBunnies);
+            Bunnies.add(myB);
             
             
             // JPANEL of image for OPPonent's guesses BUNNIES
-            JPanel oppBunnies = new JPanel();
-            oppBunnies.setLayout(new BorderLayout());
-            oppBunnies.setSize(200, 200);
-            results.add(oppBunnies, BorderLayout.EAST);
             ImageIcon img4;
-            if (oppGuess == 0) {
+            if (oppNumBunnies == 0) {
                 img4 = new ImageIcon("src/javafinalprojectplayer/noBunnies.PNG");
-            } else if (oppGuess == 1) {
+            } else if (oppNumBunnies == 1) {
                 img4 = new ImageIcon("src/javafinalprojectplayer/oneBunny1.PNG");
             } else {
-                img4 = new ImageIcon("src.javafinalprojectplayer/twoBunnies.PNG");
+                img4 = new ImageIcon("src/javafinalprojectplayer/twoBunnies.PNG");
             }
             oppB = new JLabel(img4);
             
-            oppBunnies.add(oppB);
-            results.add(oppBunnies);
-            
-            
-            JLabel result; 
-            
-            if (total == guess && total == oppGuess) { //both guess correctly, go again
-                System.out.println("both guessed correctly");
-                result = new JLabel("You both guessed correctly... try again!");
-                result.setFont(new Font("Serif", Font.BOLD, 20));
-                result.setForeground(Color.RED);
-                result.setBackground(Color.ORANGE);
-                result.setOpaque(true);
-                JButton tryAgain = new JButton("Try Again");
-                results.add(tryAgain, BorderLayout.SOUTH);
-                tryAgain.addActionListener(new StartAgain());
-                whoWon.add(result);
-                
-            } else if (total != guess && total != oppGuess) { //both wrong
-                System.out.println("both guessed wrong");
-
-                result = new JLabel("You both guessed wrong... try again!");
-                result.setFont(new Font("Serif", Font.BOLD, 20));
-                result.setForeground(Color.RED);
-                result.setBackground(Color.ORANGE);
-                result.setOpaque(true);
-                JButton tryAgain = new JButton("Try Again");
-                results.add(tryAgain, BorderLayout.SOUTH);
-                tryAgain.addActionListener(new StartAgain());
-                whoWon.add(result);
-            } else {
-                correct = 1;
-            }
-            
-            results.setVisible(true);
+            Bunnies.add(oppB);
+            results.add(Bunnies, BorderLayout.CENTER);
             
             System.out.println("Correct: "+correct);
-            guess = 0;
-            oppGuess = 0;
-            total = 0;
-            
-            
-            while (timer < 10){
-                try{
-                    sleep(1000);
-                }catch(InterruptedException e) {}
-                timer += 1;
-                timerl.setText(" " + timer + " ");
-                //startgame.setVisible(true);
+            if (correct != 1){
+                JButton replayButton = new JButton("Replay"); //HOW TO CHANGE START BUTTON SIZE?
+                results.add(replayButton, BorderLayout.SOUTH);
+                replayButton.addActionListener(new StartGame());
             }
-            timer = 0;
-        
+            results.setVisible(true);
+            System.out.println("Results screen display");
+            String go = sin.nextLine(); //server says go
+            System.out.println("Server says go: "+go);
+            results.setVisible(false);
+            System.out.println("Result screen goodbye");
         }
-        
-        
- 
-      
     }
 
-    
 }
 
 
 class StartGame implements ActionListener {
-
     StartGame() {
-        JavaFinalProjectPlayer.score = 0;
         JavaFinalProjectPlayer.timer = 0;
     }
     @Override
@@ -350,9 +351,7 @@ class StartGame implements ActionListener {
             JButton curr = (JButton) arg0.getSource();
             curr.setText("Waiting"); // tell current player wait for other player
             curr.enable(false);
-      
         }
-
 }
 
 
@@ -371,20 +370,13 @@ class Bunny implements ActionListener {
             else{
                 curr.setBorder(new LineBorder(Color.BLACK));
             }
+            System.out.println("bunnies change: " + JavaFinalProjectPlayer.bunnies[0]+JavaFinalProjectPlayer.bunnies[1]);
             return;
         }
 }
 
    
-class StartAgain implements ActionListener{
-    StartAgain(){}
-    
-    @Override
-        public void actionPerformed(ActionEvent arg0){
-            return;
-        }
 
-}
        
 class LoadingGraphic extends JPanel {
     int dots;
