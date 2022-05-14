@@ -158,42 +158,54 @@ public class JavaFinalProjectPlayer  {
         guessp.setSize(500, 100);
         startgame.add(guessp, BorderLayout.SOUTH);
         JTextField guessbox= new JTextField(20);
+        guessbox.setText("0");
         guessp.add(guessbox);
         
         
         //*******************WHEN BOTH CLIENTS CLICK START BUTTON*********************************
         String openGameWindow = sin.nextLine(); //listens for "both clients clicked start"
-        System.out.println("right before disposing windows, received server message that both clicked");
+        System.out.println(openGameWindow);
         //dispose of initial window and open the game window
         initial.dispose();
-        startgame.setVisible(true);
-        
-        
-        //**********START GAME********************************************************************
-        //start timer
-        sin.nextLine();
-        while (timer < 10){
-            try{
-                sleep(1000);
-            }catch(InterruptedException e) {}
-            timer += 1;
-            timerl.setText(" " + timer + " ");
-            //startgame.setVisible(true);
-        }
-        
-        startgame.setVisible(false);
-        timer = 0;
-        
-        //check how many bunnies the client selected 
-        int totalBunnies = 0;
-        for (int i = 0; i < bunnies.length; i++){
-            if (bunnies[i] == 1) {
-                totalBunnies++;
-            }
-        }
-        //sout.println(guessbox.getText());
-        sout.println(totalBunnies + guessbox.getText()); //send to server the number of bunnies selected , and guess
+        int correct = 0;
+        while(correct != 1){
+            startgame.setVisible(true);
+            //sout.println("Both window started");
 
+
+            //**********START GAME********************************************************************
+            //start timer
+            //sin.nextLine();
+            while (timer < 10){
+                try{
+                    sleep(1000);
+                }catch(InterruptedException e) {}
+                timer += 1;
+                timerl.setText(" " + timer + " ");
+                //startgame.setVisible(true);
+            }
+
+            startgame.setVisible(false);
+            timer = 0;
+
+            //check how many bunnies the client selected 
+            int totalBunnies = 0;
+            for (int i = 0; i < bunnies.length; i++){
+                if (bunnies[i] == 1) {
+                    totalBunnies++;
+                }
+            }
+            //sout.println(guessbox.getText());
+            sout.println(totalBunnies); // send to server the number of bunnies selected
+            sout.println(guessbox.getText()); //send to server guess
+            
+            System.out.println(totalBunnies);
+            System.out.println(guessbox.getText());
+
+            correct = sin.nextInt();
+            System.out.println("Correct: "+correct);
+        
+        }
       
     }
 
@@ -210,6 +222,9 @@ class StartGame implements ActionListener {
     @Override
         public void actionPerformed(ActionEvent arg0){
             JavaFinalProjectPlayer.sout.println("start"); //tell server start, a client clicked the button
+            JButton curr = (JButton) arg0.getSource();
+            curr.setText("Waiting"); // tell current player wait for other player
+            curr.enable(false);
       
         }
 

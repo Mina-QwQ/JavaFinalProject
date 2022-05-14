@@ -19,6 +19,8 @@ public class JavaFinalProjectServer {
      */
     static Vector<Socket> clients = new Vector<>();
     static int clickedStartButton = 0;
+    static int total = 0;
+    static int gotans = 0;
     
     public static void main(String[] args) {
         int clientCount = 0;
@@ -34,13 +36,13 @@ public class JavaFinalProjectServer {
                 clients.add(client_sock);
                 clientCount++;
             }
+            System.out.println("here");
             player1 = clients.get(0);
             player2 = clients.get(1);
             p1sout = new PrintStream(player1.getOutputStream());
             p2sout = new PrintStream(player2.getOutputStream());
-            
-            Socket winner = whowon(clients.get(0), clients.get(1));
-            PrintStream eachSout;     
+            /*
+            Socket winner = whowon(player1, player2);
             while ((winner != player1) && (winner != player2)){
                 p1sout.println("You lost"); //send to all clients
                 p2sout.println("You won"); //send to all clients
@@ -52,7 +54,7 @@ public class JavaFinalProjectServer {
             }else{
                 p1sout.print("tie");
                 p2sout.print("tie");
-            }
+            }*/
             
         } catch (IOException ex) {}
         
@@ -87,7 +89,7 @@ public class JavaFinalProjectServer {
             System.out.println("Could not get input stream");
         }
         
-        return player1;
+        return null;
     }
   
 }
@@ -152,17 +154,50 @@ class ProcessConnection extends Thread {
                 } 
             } 
             String line;
-            line = sin.nextLine(); // 'start' from clicking start button
-            JavaFinalProjectServer.clickedStartButton++;
+            int correct = 0;
             
-            if (JavaFinalProjectServer.clickedStartButton == 2) { //if both clicked start
-                PrintStream eachSout;
-                for (int i = 0; i < JavaFinalProjectServer.clients.size(); i++){
-                    eachSout = new PrintStream(JavaFinalProjectServer.clients.get(i).getOutputStream());
-                    eachSout.println("both clients clicked start"); //send to all clients
-                    //System.out.println("both clients clicked start");
-                } 
-            } 
+            line = sin.nextLine(); // 'start' from clicking start button
+            while (correct != 1){
+                JavaFinalProjectServer.clickedStartButton++;
+                //System.out.println(JavaFinalProjectServer.clickedStartButton);
+            
+                if (JavaFinalProjectServer.clickedStartButton == 2) { //if both clicked start
+                    PrintStream eachSout;
+                    for (int i = 0; i < JavaFinalProjectServer.clients.size(); i++){
+                        eachSout = new PrintStream(JavaFinalProjectServer.clients.get(i).getOutputStream());
+                        eachSout.println("both clients clicked start"); //send to all clients
+                        System.out.println("both clients clicked start");
+                    } 
+                    JavaFinalProjectServer.clickedStartButton = 0;
+                }
+                /*while (JavaFinalProjectServer.clickedStartButton != 2){
+                    continue;
+                }*/
+                System.out.println("starting of getting ans");
+
+                int numBunnies = sin.nextInt();
+                System.out.println("Num of Bunnies "+numBunnies);
+                JavaFinalProjectServer.total += numBunnies;
+                int guess = sin.nextInt();
+                JavaFinalProjectServer.gotans++;
+                System.out.println(JavaFinalProjectServer.gotans);
+                while(JavaFinalProjectServer.gotans < 2){
+                    continue;
+                }
+                if(guess == JavaFinalProjectServer.total){
+                    sout.print(1);
+                    correct = 1;
+                    // stop the clients
+                }
+                else{
+                    sout.print(0);
+                    correct = 0;
+                }
+                System.out.println("Guess: "+JavaFinalProjectServer.total);
+                JavaFinalProjectServer.total = 0;
+            }
+            
+           
             
         } catch(IOException e) {}
     }
