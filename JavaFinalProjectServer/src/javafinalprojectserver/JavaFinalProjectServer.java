@@ -21,13 +21,17 @@ public class JavaFinalProjectServer {
     static int clickedStartButton = 0;
     static int total = 0;
     static int gotans = 0;
+    static Socket player1;
+    static Socket player2;
+    static int[] guesses;
     
     public static void main(String[] args) {
         int clientCount = 0;
-        Socket player1;
-        Socket player2;
         PrintStream p1sout;
         PrintStream p2sout;
+        guesses = new int[2];
+        
+        
         try {
             ServerSocket ss = new ServerSocket(5190);
             while (clientCount < 2) { //connect up to two clients
@@ -57,40 +61,9 @@ public class JavaFinalProjectServer {
             }*/
             
         } catch (IOException ex) {}
-        
-      
-
-          
+         
     }
-    
-        
-    static Socket whowon(Socket player1, Socket player2){
-        try{
-            Scanner p1Input = new Scanner(player1.getInputStream());
-            int bunny1 = p1Input.nextInt();
-            int guess1 = p1Input.nextInt();
-            
-            Scanner p2Input = new Scanner(player2.getInputStream());
-            int bunny2 = p2Input.nextInt();
-            int guess2 = p2Input.nextInt();
-            
-            int ans = bunny1 + bunny2;
-            if ((ans == guess1) && (ans != guess2)){
-                return player1;
-            }
-            else if((ans != guess1) && (ans == guess1)){
-                return player2;
-            }
-            
-            
-            //send each client their oppoenent's guess to display all bunnies 
-
-        }catch (IOException ex) {
-            System.out.println("Could not get input stream");
-        }
-        
-        return null;
-    }
+   
   
 }
         
@@ -132,6 +105,8 @@ class ProcessConnection extends Thread {
     Socket client_sock;
     String username;
     PrintStream sout;
+    
+    
     ProcessConnection(Socket newClientSock) {
         client_sock = newClientSock;
     }
@@ -157,7 +132,7 @@ class ProcessConnection extends Thread {
             int correct = 0;
             
             line = sin.nextLine(); // 'start' from clicking start button
-            while (correct != 1){
+            while (correct == 0){  
                 JavaFinalProjectServer.clickedStartButton++;
                 //System.out.println(JavaFinalProjectServer.clickedStartButton);
             
@@ -177,25 +152,54 @@ class ProcessConnection extends Thread {
 
                 int numBunnies = sin.nextInt();
                 System.out.println("Num of Bunnies "+numBunnies);
+                
                 JavaFinalProjectServer.total += numBunnies;
                 int guess = sin.nextInt();
                 JavaFinalProjectServer.gotans++;
                 System.out.println(JavaFinalProjectServer.gotans);
                 while(JavaFinalProjectServer.gotans < 2){
+                    //System.out.println(JavaFinalProjectServer.gotans);
                     continue;
                 }
-                if(guess == JavaFinalProjectServer.total){
-                    sout.print(1);
+                System.out.println("Done while loop");
+                
+                JavaFinalProjectServer.guesses[0] = 195738;
+                JavaFinalProjectServer.guesses[1] = 195738;
+                
+                while (JavaFinalProjectServer.guesses[0] == 195738 || JavaFinalProjectServer.guesses[1] == 195738) {
+                    if (client_sock == JavaFinalProjectServer.player1) {
+                        JavaFinalProjectServer.guesses[0] = guess;
+                    } else {
+                        JavaFinalProjectServer.guesses[1] = guess;
+                    } //fill array up with client guesses
+                
+                }
+                
+                
+                
+                
+                if ((JavaFinalProjectServer.total == JavaFinalProjectServer.guesses[0]) || (JavaFinalProjectServer.total == JavaFinalProjectServer.guesses[1])) {
                     correct = 1;
-                    // stop the clients
+                } //someone won! 
+                
+                //send to other client this client's guess
+                if (JavaFinalProjectServer.player1 == client_sock) {
+                    PrintStream s = new PrintStream (JavaFinalProjectServer.player2.getOutputStream());
+                    s.println(guess);
+                } else {
+                    PrintStream s = new PrintStream (JavaFinalProjectServer.player1.getOutputStream());
+                    s.println(guess);
                 }
-                else{
-                    sout.print(0);
-                    correct = 0;
-                }
-                System.out.println("Guess: "+JavaFinalProjectServer.total);
-                JavaFinalProjectServer.total = 0;
+                        
+                System.out.println("Total: " + JavaFinalProjectServer.total);
+                JavaFinalProjectServer.total = 0; 
+                //reset if no one wins
+                JavaFinalProjectServer.gotans = 0;
+                sin.nextLine();
+                
+                
             }
+            System.out.println("reach out of while loop");
             
            
             
