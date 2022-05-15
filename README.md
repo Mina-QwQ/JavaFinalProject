@@ -1,6 +1,7 @@
 # Java Final Project: BUNNIES 15 20! 🐰 🥕
 
 This game is created by Winnie Zheng and MeiNa Xie
+
 Github Link: https://github.com/Mina-QwQ/JavaFinalProject
 
 This game is called BUNNIES 15 20! 🐰 🥕 This is a simple client-server multiplayer game adapted from a modern Chinese drinking game called "15-20". 
