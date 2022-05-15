@@ -6,7 +6,7 @@ package javafinalprojectplayer;
 
 /**
  *
- * @author meinaxie
+ * @author meinaxie and winniezheng
  */
 
 import java.io.IOException;

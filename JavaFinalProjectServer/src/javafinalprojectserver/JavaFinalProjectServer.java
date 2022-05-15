@@ -6,7 +6,7 @@ package javafinalprojectserver;
 
 /**
  *
- * @author meinaxie
+ * @author meinaxie and winniezheng
  */
 import java.io.*;
 import java.net.*;
